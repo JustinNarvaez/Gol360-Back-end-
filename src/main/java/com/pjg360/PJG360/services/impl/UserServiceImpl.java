@@ -1,7 +1,9 @@
 package com.pjg360.PJG360.services.impl;
 
+import com.pjg360.PJG360.model.dtos.ChangePasswordRequestDTO;
 import com.pjg360.PJG360.model.dtos.UserResponseDTO;
 import com.pjg360.PJG360.model.mappers.UserMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.pjg360.PJG360.repositories.UserRepository;
 import com.pjg360.PJG360.services.IUserService;
@@ -12,9 +14,12 @@ import java.util.List;
 public class UserServiceImpl implements IUserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -50,5 +55,21 @@ public class UserServiceImpl implements IUserService {
         user.setEmail(email);
         userRepository.save(user);
         return UserMapper.toDTO(user);
+    }
+
+    @Override
+    public String changePassword(Integer id, ChangePasswordRequestDTO dto) {
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword()))
+            throw new RuntimeException("La contrasena actual es incorrecta");
+
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword()))
+            throw new RuntimeException("Las contrasenas nuevas no coinciden");
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+        return "Contrasena actualizada exitosamente";
     }
 }

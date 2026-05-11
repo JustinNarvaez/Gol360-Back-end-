@@ -1,5 +1,6 @@
 package com.pjg360.PJG360.controller;
 
+import com.pjg360.PJG360.model.dtos.ChangePasswordRequestDTO;
 import com.pjg360.PJG360.model.dtos.UserResponseDTO;
 import com.pjg360.PJG360.model.dtos.UserUpdateRequestDTO;
 import org.springframework.http.HttpStatus;
@@ -42,5 +43,14 @@ public class UserController {
         UserResponseDTO updated = userService.updatePersonalData(
                 id, dto.getFirstName(), dto.getLastName(), dto.getUserName(), dto.getEmail());
         return new ResponseEntity<>(updated, HttpStatus.OK);
+    }
+
+    // Cambiar contraseña   
+    @PutMapping("/users/{id}/password")
+    public ResponseEntity<String> cambiarContrasena(
+            @PathVariable Integer id,
+            @RequestBody ChangePasswordRequestDTO dto) {
+        System.out.println("Cambiando contrasena del usuario con ID: " + id);
+        return new ResponseEntity<>(userService.changePassword(id, dto), HttpStatus.OK);
     }
 }

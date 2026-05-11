@@ -1,5 +1,6 @@
 package com.pjg360.PJG360.services;
 
+import com.pjg360.PJG360.model.dtos.ChangePasswordRequestDTO;
 import com.pjg360.PJG360.model.dtos.UserResponseDTO;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface IUserService {
     // Actualizar datos personales básicos
     UserResponseDTO updatePersonalData(Integer id, String firstName,
                                        String lastName, String userName, String email);
+
+    String changePassword(Integer id, ChangePasswordRequestDTO dto);
 }
